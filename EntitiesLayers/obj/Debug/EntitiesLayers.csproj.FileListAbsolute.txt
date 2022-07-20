@@ -1,0 +1,12 @@
+E:\c#\MobileNumber_TrackingLocation\EntitiesLayers\bin\Debug\EntitiesLayers.dll
+E:\c#\MobileNumber_TrackingLocation\EntitiesLayers\bin\Debug\EntitiesLayers.pdb
+E:\c#\MobileNumber_TrackingLocation\EntitiesLayers\obj\Debug\EntitiesLayers.csproj.AssemblyReference.cache
+E:\c#\MobileNumber_TrackingLocation\EntitiesLayers\obj\Debug\EntitiesLayers.csproj.CoreCompileInputs.cache
+E:\c#\MobileNumber_TrackingLocation\EntitiesLayers\obj\Debug\EntitiesLayers.dll
+E:\c#\MobileNumber_TrackingLocation\EntitiesLayers\obj\Debug\EntitiesLayers.pdb
+E:\Practical\ProjectPoint\EntitiesLayers\bin\Debug\EntitiesLayers.dll
+E:\Practical\ProjectPoint\EntitiesLayers\bin\Debug\EntitiesLayers.pdb
+E:\Practical\ProjectPoint\EntitiesLayers\obj\Debug\EntitiesLayers.csproj.AssemblyReference.cache
+E:\Practical\ProjectPoint\EntitiesLayers\obj\Debug\EntitiesLayers.csproj.CoreCompileInputs.cache
+E:\Practical\ProjectPoint\EntitiesLayers\obj\Debug\EntitiesLayers.dll
+E:\Practical\ProjectPoint\EntitiesLayers\obj\Debug\EntitiesLayers.pdb

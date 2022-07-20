@@ -1,0 +1,355 @@
+﻿@{
+    ViewBag.Title = "Manage Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-content">
+    <div class="container-fluid">
+
+        <!-- start page title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                    <h4 class="mb-sm-0 font-size-18">User Details</h4>
+
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="@Url.Action("Index","Users")">Manage Users</a></li>
+                            <li class="breadcrumb-item active">User Details</li>
+                        </ol>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- end page title -->
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="" class="row" method="post" id="CreateNewUser" novalidate="novalidate">
+                            <input type="hidden" name="Id" id="Id" value="0" />
+                            <input type="hidden" name="UsersExperienceDetailsData" id="UsersExperienceDetailsData" value="0" />
+                            <div class="form-group col-lg-3 mb-2">
+                                <label>First Name</label>
+                                <input type="text" name="FirstName" class="form-control" id="FirstName" value="" />
+                            </div>
+                            <div class="form-group col-lg-3 mb-2">
+                                <label>Last Name</label>
+                                <input type="text" name="LastName" class="form-control" id="LastName" value="" />
+                            </div>
+                            <div class="form-group col-lg-3 mb-2">
+                                <label>Email Id</label>
+                                <input type="email" name="EmailId" class="form-control" id="EmailId" value="" />
+                            </div>
+                            <div class="form-group col-lg-3 mb-2">
+                                <label>Date Of Birth</label>
+                                <input type="text" name="DateOfBirth" class="form-control datepicker" autocomplete="off" id="DateOfBirth" value="" />
+                            </div>
+                            <div class="form-group col-lg-12 mb-2">
+                                <label>Address</label>
+                                <textarea class="form-control" name="Address" id="Address"></textarea>
+                            </div>
+
+                           
+
+                            <div class="col-lg-12 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="mt-3 mb-3">User’s Experience details</h4>
+                                    <button type="button" class="btn btn-primary" onclick="addMoreUsersEDetails();">Add More</button>
+                                </div>
+                                <div>
+                                    <div class="row mb-2" id="UsersExperienceDetails_1">
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control datepicker" autocomplete="off" name="FromDate_1" id="FromDate_1" value="" placeholder="From Date" />
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control datepicker" autocomplete="off" name="ToDate_1" id="ToDate_1" value="" placeholder="To Date" />
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control" name="Position_1" id="Position_1" value="" placeholder="Position" />
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control" name="CompanyName_1" id="CompanyName_1" value="" placeholder="Company Name"/>
+                                        </div>  
+                                    </div>
+                                    <div id="usersEdetails">
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <button type="submit" class="btn btn-primary">Save Details</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+    <script>
+        function SelectDatePicker() {
+            $('.datepicker').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                autoUpdateInput: false
+            },
+                function (start, end, label) {
+                    $('.datepicker').on('apply.daterangepicker', function (ev, picker) {
+                        $(this).val(picker.startDate.format('MM/DD/YYYY'));
+                    });
+
+                    $('.datepicker').on('cancel.daterangepicker', function (ev, picker) {
+                        $(this).val('');
+                    });
+                });
+        }
+            
+        
+        var DataValid = false;
+        $(document).ready(function ($) {
+            SelectDatePicker();
+            if (atob("@ViewBag.Id") > 0) {
+                UserDataGet();
+            }
+            $("#CreateNewUser").validate({
+                rules: {
+                    FirstName: "required",
+                    LastName: "required",
+                    DateOfBirth: "required",
+                    EmailId: {
+                        required: true,
+                        email: true
+                    },
+                    Address: "required"
+
+                },
+                messages: {
+                    FirstName: "Please enter your firstname",
+                    LastName: "Please enter your lastname",
+                    DateOfBirth: "Please enter your dateofbirth",
+                    EmailId: {
+                        required: "Please enter your email",
+                    },
+                    Address: "Please enter your address"
+                },
+                errorPlacement: function (error, element) {
+                    if (element.is(":radio")) {
+                        error.appendTo(element.parents('.form-group'));
+                    }
+                    else {
+                        error.insertAfter(element);
+                    }
+                },
+                submitHandler: function (form) {
+                    UsersExperienceGetDate();
+
+                    if (DataValid == true) {
+                        CreateNewUsers();
+                    }
+                    
+                }
+
+            });
+        });
+
+        function CreateNewUsers() {
+            debugger;
+            $.ajax({
+                url: '@Url.Action("CreateUserDetails", "Users")',
+                data: {
+                    Id: $("#Id").val(),
+                    FirstName: $("#FirstName").val(),
+                    LastName: $("#LastName").val(),
+                    DateOfBirth: $("#DateOfBirth").val(),
+                    EmailId: $("#EmailId").val(),
+                    Address: $("#Address").val(),
+                    UsersExperienceDetailsData: $("#UsersExperienceDetailsData").val()
+                },
+                type: 'POST',
+                datatype: 'json',
+                success: function (response) {
+                    if (response.Code == 200) {
+                        swal.fire({
+                            icon: "success",
+                            title: response.Message,
+                            timer: 2000,
+                            showCancelButton: false,
+                            showConfirmButton: false
+                        })
+                        setTimeout(function () {
+                            window.location.href = "@Url.Action("Index", "Users")"
+                        }, 2000);
+                    } else {
+                        swal.fire({
+                            icon: "error",
+                            title: response.Message,
+                            timer: 2000,
+                            showCancelButton: false,
+                            showConfirmButton: false
+                        })
+                    }
+                },
+                error: function () { }
+            });
+        }
+
+
+        function UserDataGet() {
+            $.ajax({
+                url: '@Url.Action("UserDetails", "Users")',
+                data: {
+                    Id: atob("@ViewBag.Id"),
+                },
+                type: 'GET',
+                datatype: 'json',
+                success: function (response) {
+                    console.log('response', response);
+                    if (response.Code == 200) {
+                        $("#Id").val(response.Item.Id);
+                        $("#FirstName").val(response.Item.FirstName);
+                        $("#LastName").val(response.Item.LastName);
+                        $("#DateOfBirth").val(response.Item.DateOfBirth);
+                        $("#EmailId").val(response.Item.EmailId);
+                        $("#Address").val(response.Item.Address);
+                        debugger;
+                        if (response.Item.UsersExperiencedetailsObj.length > 0) {
+                            for (var i = 0; i < response.Item.UsersExperiencedetailsObj.length; i++) {
+                                countDetails = i + 1;
+                                if (i == 0) {
+                                    $("#FromDate_" + countDetails).val(response.Item.UsersExperiencedetailsObj[i].FromDate);
+                                    $("#ToDate_" + countDetails).val(response.Item.UsersExperiencedetailsObj[i].ToDate);
+                                    $("#Position_" + countDetails).val(response.Item.UsersExperiencedetailsObj[i].Position);
+                                    $("#CompanyName_" + countDetails).val(response.Item.UsersExperiencedetailsObj[i].CompanyName);
+                                } else {
+                                    $("#usersEdetails").append(`
+                                    <div class="row mb-2" id="UsersExperienceDetails_${countDetails}">
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control datepicker" autocomplete="off" name="FromDate_${countDetails}" id="FromDate_${countDetails}" value="${response.Item.UsersExperiencedetailsObj[i].FromDate}" placeholder="From Date" />
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control datepicker" autocomplete="off" name="ToDate_${countDetails}" id="ToDate_${countDetails}" value="${response.Item.UsersExperiencedetailsObj[i].ToDate}" placeholder="To Date" />
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control" name="Position_${countDetails}" id="Position_${countDetails}" value="${response.Item.UsersExperiencedetailsObj[i].Position}" placeholder="Position" />
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <input type="text" class="form-control" name="CompanyName_${countDetails}" id="CompanyName_${countDetails}" value="${response.Item.UsersExperiencedetailsObj[i].CompanyName}" placeholder="Company Name"/>
+                                        </div>
+                                        <div class="col-lg-1">
+                                            <button type="button" class="btn btn-soft-danger ml-2" onclick="UsersExperienceDetailsDelete(${countDetails})"><i class="bx bx-trash"></i></button>
+                                        </div>
+                                    </div>
+                                `)
+                                }
+                            }
+                        }
+                    }
+                },
+                error: function () { }
+            });
+        }
+
+
+        var countDetails = 1;
+
+        function addMoreUsersEDetails() {
+
+            countDetails = countDetails + 1;
+
+            $("#usersEdetails").append(`
+                <div class="row mb-2" id="UsersExperienceDetails_${countDetails}">
+                    <div class="col-lg-3">
+                        <input type="text" class="form-control datepicker" name="FromDate_${countDetails}" id="FromDate_${countDetails}" value="" placeholder="From Date" />
+                    </div>
+                    <div class="col-lg-3">
+                        <input type="text" class="form-control datepicker" name="ToDate_${countDetails}" id="ToDate_${countDetails}" value="" placeholder="To Date" />
+                    </div>
+                    <div class="col-lg-3">
+                        <input type="text" class="form-control" name="Position_${countDetails}" id="Position_${countDetails}" value="" placeholder="Position" />
+                    </div>
+                    <div class="col-lg-2">
+                        <input type="text" class="form-control" name="CompanyName_${countDetails}" id="CompanyName_${countDetails}" value="" placeholder="Company Name"/>
+                    </div>
+                    <div class="col-lg-1">
+                        <button type="button" class="btn btn-soft-danger ml-2" onclick="UsersExperienceDetailsDelete(${countDetails})"><i class="bx bx-trash"></i></button>
+                    </div>
+                </div>
+            `);
+            SelectDatePicker();
+        }
+
+
+        function UsersExperienceDetailsDelete(countDetailsId) {
+            $("#UsersExperienceDetails_" + countDetailsId).remove();
+        }
+
+        function UsersExperienceGetDate() {
+            debugger;
+            if (countDetails > 0) {
+                var UsersExperienceDetails = [];
+                for (var i = 0; i < countDetails; i++)
+                {
+                    var index = i + 1;
+                    if ($("#FromDate_" + index).val() == "") {
+                        $("#FromDate_" + index).addClass('error');
+                        DataValid = false;
+                    }
+                    else {
+                        $("#FromDate_" + index).removeClass('error');
+                        DataValid = true
+                    }
+
+                    if ($("#ToDate_" + index).val() == "") {
+                        $("#ToDate_" + index).addClass('error');
+                        DataValid = false;
+                    }
+                    else {
+                        $("ToDate_" + index).removeClass('error');
+                        DataValid = true
+                    }
+                    if ($("#Position_" + index).val() == "") {
+                        $("#Position_" + index).addClass('error');
+                        DataValid = false;
+                    }
+                    else {
+                        $("Position_" + index).removeClass('error');
+                        DataValid = true
+                    }
+                    if ($("#CompanyName_" + index).val() == "") {
+                        $("#CompanyName_" + index).addClass('error');
+                        DataValid = false;
+                    }
+                    else {
+                        $("CompanyName_" + index).removeClass('error');
+                        DataValid = true
+                    }
+                    if (
+                        ($("#FromDate_" + index).val() != "" && $("#ToDate_" + index).val() != "" && $("#Position_" + index).val() != "" && $("#CompanyName_" + index).val() != "")
+                        &&
+                        ($("#FromDate_" + index).val() != null && $("#ToDate_" + index).val() != null && $("#Position_" + index).val() != null && $("#CompanyName_" + index).val() != null)
+                     ) {
+                        var obj = {
+                            FromDate: $("#FromDate_" + index).val(),
+                            ToDate: $("#ToDate_" + index).val(),
+                            Position: $("#Position_" + index).val(),
+                            CompanyName: $("#CompanyName_" + index).val(),
+                        }
+                       
+                        UsersExperienceDetails.push(obj);
+                        
+                    }
+                }
+                debugger;
+                $("#UsersExperienceDetailsData").val(JSON.stringify(UsersExperienceDetails));
+               
+            }
+        }
+
+    </script>
+}
